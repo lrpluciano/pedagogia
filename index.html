@@ -156,7 +156,7 @@
         .check-mark { position: absolute; top: 10px; right: 10px; color: var(--success); font-size: 1.2rem; display: none; }
         .resource-card.completed .check-mark { display: block; }
 
-        /* --- MODAL OTIMIZADO PARA PLAYERS NATIVOS --- */
+        /* --- MODAL COM CONTROLES DE VELOCIDADE --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-modal); display: none; justify-content: center;
@@ -164,7 +164,7 @@
         }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content {
-            background-color: var(--bg-card); width: 100%; max-width: 800px; 
+            background-color: var(--bg-card); width: 100%; max-width: 900px; 
             border-radius: 12px; display: flex; flex-direction: column; 
             overflow: hidden; box-shadow: var(--shadow-lg);
         }
@@ -176,47 +176,96 @@
         .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
         .modal-close:hover { color: var(--primary); }
         
+        /* Barra de controles customizada */
+        .player-controls {
+            padding: 12px 20px;
+            background-color: var(--bg-body);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .speed-selector {
+            position: relative;
+            display: inline-block;
+        }
+        .speed-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .speed-btn:hover { background-color: var(--primary-hover); }
+        .speed-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 4px;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            min-width: 120px;
+        }
+        .speed-dropdown.active { display: block; }
+        .speed-option {
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+        .speed-option:hover { background-color: var(--bg-body); }
+        .speed-option:first-child { border-radius: 6px 6px 0 0; }
+        .speed-option:last-child { border-radius: 0 0 6px 6px; }
+        
+        .open-new-tab-btn {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+        .open-new-tab-btn:hover { background-color: var(--bg-body); }
+
         .modal-body { 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            min-height: 200px;
+            flex: 1;
+            background-color: #000;
+            position: relative;
         }
-        /* Estilos para o player nativo de áudio */
-        .modal-body audio {
-            width: 100%;
-            max-width: 600px;
-            outline: none;
-            border-radius: 8px;
-        }
-        /* Estilos para o player nativo de vídeo */
-        .modal-body video {
-            width: 100%;
-            max-height: 70vh;
-            background: #000;
-            border-radius: 8px;
-            outline: none;
-        }
-        /* Estilos para iframe (PDFs, etc) */
         .modal-body iframe {
             width: 100%;
             height: 70vh;
             border: none;
-            border-radius: 8px;
         }
+        
         .player-hint {
-            margin-top: 15px;
+            padding: 12px 20px;
+            background-color: rgba(241, 99, 34, 0.1);
+            border-top: 1px solid var(--border);
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(241, 99, 34, 0.1);
-            padding: 8px 12px;
-            border-radius: 6px;
+            gap: 8px;
         }
+        .player-hint i { color: var(--primary); }
 
         footer {
             background-color: var(--bg-card); 
@@ -242,7 +291,9 @@
             .brand { flex-direction: column; }
             .resources-grid { grid-template-columns: 1fr; }
             .modal-content { max-width: 100%; height: 90vh; }
-            .modal-body video, .modal-body iframe { height: 60vh; }
+            .modal-body iframe { height: 50vh; }
+            .player-controls { flex-direction: column; align-items: stretch; }
+            .open-new-tab-btn { margin-left: 0; }
         }
     </style>
 </head>
@@ -291,7 +342,7 @@
         <div id="panel-mat2" class="discipline-panel active">
             <div class="info-box">
                 <i class="fas fa-lightbulb"></i>
-                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. <strong>Dica:</strong> Nos players de áudio e vídeo, clique nos <em>três pontinhos</em> do player para alterar a velocidade (ex: 1.5x, 2x).</p>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. Para alterar a velocidade, use o botão <strong>"Velocidade"</strong> no player ou abra em nova aba.</p>
             </div>
             <div id="weeks-container-mat2"></div>
         </div>
@@ -299,7 +350,7 @@
         <div id="panel-didatica" class="discipline-panel">
             <div class="info-box">
                 <i class="fas fa-lightbulb"></i>
-                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. <strong>Dica:</strong> Nos players de áudio e vídeo, clique nos <em>três pontinhos</em> do player para alterar a velocidade (ex: 1.5x, 2x).</p>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. Para alterar a velocidade, use o botão <strong>"Velocidade"</strong> no player ou abra em nova aba.</p>
             </div>
             <div id="weeks-container-didatica"></div>
         </div>
@@ -311,8 +362,35 @@
                 <h3 id="modal-title">Visualizando Material</h3>
                 <button class="modal-close" onclick="closeModal()" aria-label="Fechar modal">&times;</button>
             </div>
+            
+            <!-- Barra de controles customizada -->
+            <div class="player-controls" id="player-controls" style="display: none;">
+                <div class="speed-selector">
+                    <button class="speed-btn" onclick="toggleSpeedDropdown()">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="current-speed">Velocidade: 1x</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="speed-dropdown" id="speed-dropdown">
+                        <div class="speed-option" onclick="setSpeed(0.5)">0.5x</div>
+                        <div class="speed-option" onclick="setSpeed(1)">1x (Normal)</div>
+                        <div class="speed-option" onclick="setSpeed(1.25)">1.25x</div>
+                        <div class="speed-option" onclick="setSpeed(1.5)">1.5x</div>
+                        <div class="speed-option" onclick="setSpeed(2)">2x</div>
+                    </div>
+                </div>
+                <button class="open-new-tab-btn" onclick="openInNewTab()">
+                    <i class="fas fa-external-link-alt"></i> Abrir em nova aba
+                </button>
+            </div>
+            
             <div class="modal-body" id="modal-body-content">
-                <!-- O conteúdo (audio, video ou iframe) será injetado aqui via JS -->
+                <!-- O iframe será injetado aqui via JS -->
+            </div>
+            
+            <div class="player-hint" id="player-hint" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <span>Para controle total de velocidade, instale a extensão <strong>"Video Speed Controller"</strong> no Chrome/Edge ou abra o vídeo em nova aba.</span>
             </div>
         </div>
     </div>
@@ -325,7 +403,6 @@
     </footer>
 
     <script>
-        // --- DADOS DAS DISCIPLINAS ---
         const disciplines = {
             mat2: {
                 name: "Metodologia do Ensino da Matemática II",
@@ -370,6 +447,8 @@
         };
 
         let currentDiscipline = 'mat2';
+        let currentFileId = '';
+        let currentType = '';
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -452,37 +531,32 @@
             updateProgress(disciplineKey);
         }
 
-        // --- FUNÇÃO DE MODAL ATUALIZADA PARA PLAYERS NATIVOS ---
         function openModal(fileId, title, type) {
+            currentFileId = fileId;
+            currentType = type;
+            
             const modal = document.getElementById('resourceModal');
             const modalBody = document.getElementById('modal-body-content');
+            const playerControls = document.getElementById('player-controls');
+            const playerHint = document.getElementById('player-hint');
+            
             document.getElementById('modal-title').textContent = title;
             
-            // URL direta de streaming do Google Drive (contorna a interface limitada do preview)
-            const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-            const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-
-            if (type === 'audio') {
-                modalBody.innerHTML = `
-                    <audio controls autoplay style="width: 100%;">
-                        <source src="${streamUrl}" type="audio/mp4">
-                        <source src="${streamUrl}" type="audio/mpeg">
-                        Seu navegador não suporta o elemento de áudio.
-                    </audio>
-                    <div class="player-hint"><i class="fas fa-info-circle"></i> Clique nos 3 pontinhos (⋮) do player para alterar a velocidade (ex: 1.5x, 2x).</div>
-                `;
-            } else if (type === 'video') {
-                modalBody.innerHTML = `
-                    <video controls autoplay style="width: 100%; max-height: 60vh;">
-                        <source src="${streamUrl}" type="video/mp4">
-                        Seu navegador não suporta o elemento de vídeo.
-                    </video>
-                    <div class="player-hint"><i class="fas fa-info-circle"></i> Clique nos 3 pontinhos (⋮) do player para alterar a velocidade (ex: 1.5x, 2x).</div>
-                `;
+            // Mostra controles apenas para áudio e vídeo
+            if (type === 'audio' || type === 'video') {
+                playerControls.style.display = 'flex';
+                playerHint.style.display = 'flex';
             } else {
-                // Para PDFs, imagens ou outros, mantém o iframe do Google Drive
-                modalBody.innerHTML = `<iframe src="${previewUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                playerControls.style.display = 'none';
+                playerHint.style.display = 'none';
             }
+            
+            // Usa o iframe do Google Drive (funciona perfeitamente)
+            const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+            modalBody.innerHTML = `<iframe src="${previewUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            // Reset velocidade
+            document.getElementById('current-speed').textContent = 'Velocidade: 1x';
             
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -492,8 +566,9 @@
             const modal = document.getElementById('resourceModal');
             const modalBody = document.getElementById('modal-body-content');
             modal.classList.remove('active');
-            modalBody.innerHTML = ""; // Limpa o player/iframe para parar a reprodução imediatamente
+            modalBody.innerHTML = "";
             document.body.style.overflow = '';
+            document.getElementById('speed-dropdown').classList.remove('active');
         }
 
         function closeModalOnOverlay(event) {
@@ -502,6 +577,64 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
+        });
+
+        // --- CONTROLES DE VELOCIDADE ---
+        function toggleSpeedDropdown() {
+            const dropdown = document.getElementById('speed-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function setSpeed(speed) {
+            document.getElementById('current-speed').textContent = `Velocidade: ${speed}x`;
+            document.getElementById('speed-dropdown').classList.remove('active');
+            
+            // Abre o vídeo em nova aba com a velocidade selecionada
+            // (O iframe do Google Drive não permite controle direto de velocidade)
+            openInNewTabWithSpeed(speed);
+        }
+
+        function openInNewTab() {
+            openInNewTabWithSpeed(1);
+        }
+
+        function openInNewTabWithSpeed(speed) {
+            const driveUrl = `https://drive.google.com/file/d/${currentFileId}/view`;
+            
+            // Cria uma página HTML temporária com player nativo
+            const playerPage = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Player - ${document.getElementById('modal-title').textContent}</title>
+                    <style>
+                        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                        video, audio { max-width: 100%; max-height: 100%; }
+                    </style>
+                </head>
+                <body>
+                    ${currentType === 'video' ? 
+                        `<video controls autoplay style="width: 100%; height: 100%;" src="https://drive.google.com/uc?export=download&id=${currentFileId}"></video>` :
+                        `<audio controls autoplay style="width: 80%;" src="https://drive.google.com/uc?export=download&id=${currentFileId}"></audio>`
+                    }
+                    <script>
+                        const media = document.querySelector('${currentType}');
+                        media.playbackRate = ${speed};
+                    <\/script>
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([playerPage], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+
+        // Fecha dropdown ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.speed-selector')) {
+                document.getElementById('speed-dropdown').classList.remove('active');
+            }
         });
 
         function toggleComplete(resId, disciplineKey) {
