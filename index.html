@@ -12,7 +12,7 @@
             --primary-hover: #D14711;
             --bg-body: #F4F6F8;
             --bg-card: #FFFFFF;
-            --bg-modal: rgba(0, 0, 0, 0.6);
+            --bg-modal: rgba(0, 0, 0, 0.8);
             --text-main: #2D3748;
             --text-muted: #718096;
             --border: #E2E8F0;
@@ -25,7 +25,7 @@
         [data-theme="dark"] {
             --bg-body: #1A202C;
             --bg-card: #2D3748;
-            --bg-modal: rgba(0, 0, 0, 0.85);
+            --bg-modal: rgba(0, 0, 0, 0.9);
             --text-main: #F7FAFC;
             --text-muted: #A0AEC0;
             --border: #4A5568;
@@ -156,6 +156,7 @@
         .check-mark { position: absolute; top: 10px; right: 10px; color: var(--success); font-size: 1.2rem; display: none; }
         .resource-card.completed .check-mark { display: block; }
 
+        /* --- MODAL OTIMIZADO PARA PLAYERS NATIVOS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-modal); display: none; justify-content: center;
@@ -163,8 +164,9 @@
         }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-content {
-            background-color: var(--bg-card); width: 100%; max-width: 900px; height: 80vh;
-            border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg);
+            background-color: var(--bg-card); width: 100%; max-width: 800px; 
+            border-radius: 12px; display: flex; flex-direction: column; 
+            overflow: hidden; box-shadow: var(--shadow-lg);
         }
         .modal-header {
             padding: 15px 20px; border-bottom: 1px solid var(--border);
@@ -173,8 +175,48 @@
         .modal-header h3 { font-size: 1.1rem; }
         .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
         .modal-close:hover { color: var(--primary); }
-        .modal-body { flex: 1; background-color: #000; }
-        .modal-body iframe { width: 100%; height: 100%; border: none; }
+        
+        .modal-body { 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 200px;
+        }
+        /* Estilos para o player nativo de áudio */
+        .modal-body audio {
+            width: 100%;
+            max-width: 600px;
+            outline: none;
+            border-radius: 8px;
+        }
+        /* Estilos para o player nativo de vídeo */
+        .modal-body video {
+            width: 100%;
+            max-height: 70vh;
+            background: #000;
+            border-radius: 8px;
+            outline: none;
+        }
+        /* Estilos para iframe (PDFs, etc) */
+        .modal-body iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+            border-radius: 8px;
+        }
+        .player-hint {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(241, 99, 34, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
 
         footer {
             background-color: var(--bg-card); 
@@ -199,7 +241,8 @@
             .header-content { flex-direction: column; text-align: center; }
             .brand { flex-direction: column; }
             .resources-grid { grid-template-columns: 1fr; }
-            .modal-content { height: 90vh; }
+            .modal-content { max-width: 100%; height: 90vh; }
+            .modal-body video, .modal-body iframe { height: 60vh; }
         }
     </style>
 </head>
@@ -248,7 +291,7 @@
         <div id="panel-mat2" class="discipline-panel active">
             <div class="info-box">
                 <i class="fas fa-lightbulb"></i>
-                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir os materiais. Use o botão <strong>"Visualizar"</strong> para abrir o conteúdo aqui mesmo, sem sair da página. Marque como <strong>"Concluir"</strong> ao finalizar para acompanhar seu progresso.</p>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. <strong>Dica:</strong> Nos players de áudio e vídeo, clique nos <em>três pontinhos</em> do player para alterar a velocidade (ex: 1.5x, 2x).</p>
             </div>
             <div id="weeks-container-mat2"></div>
         </div>
@@ -256,7 +299,7 @@
         <div id="panel-didatica" class="discipline-panel">
             <div class="info-box">
                 <i class="fas fa-lightbulb"></i>
-                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir os materiais. Use o botão <strong>"Visualizar"</strong> para abrir o conteúdo aqui mesmo, sem sair da página. Marque como <strong>"Concluir"</strong> ao finalizar para acompanhar seu progresso.</p>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir. Use <strong>"Visualizar"</strong> para abrir o conteúdo. <strong>Dica:</strong> Nos players de áudio e vídeo, clique nos <em>três pontinhos</em> do player para alterar a velocidade (ex: 1.5x, 2x).</p>
             </div>
             <div id="weeks-container-didatica"></div>
         </div>
@@ -268,13 +311,12 @@
                 <h3 id="modal-title">Visualizando Material</h3>
                 <button class="modal-close" onclick="closeModal()" aria-label="Fechar modal">&times;</button>
             </div>
-            <div class="modal-body">
-                <iframe id="modal-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <div class="modal-body" id="modal-body-content">
+                <!-- O conteúdo (audio, video ou iframe) será injetado aqui via JS -->
             </div>
         </div>
     </div>
 
-    <!-- RODAPÉ ATUALIZADO -->
     <footer>
         <p>&copy; <span id="current-year"></span> IFsuldeMinas – Polo Bragança Paulista. Todos os direitos reservados.</p>
         <p class="dev-credit">
@@ -283,7 +325,7 @@
     </footer>
 
     <script>
-        // --- DADOS DAS DISCIPLINAS (Estrutura flexível por semana) ---
+        // --- DADOS DAS DISCIPLINAS ---
         const disciplines = {
             mat2: {
                 name: "Metodologia do Ensino da Matemática II",
@@ -367,8 +409,8 @@
                                     <div class="resource-title">${res.title}</div>
                                     <div class="resource-desc">${res.desc}</div>
                                     <div class="resource-actions">
-                                        <button class="btn btn-view" onclick="openModal('${res.fileId}', '${safeTitle}')">
-                                            <i class="fas fa-eye"></i> Visualizar
+                                        <button class="btn btn-view" onclick="openModal('${res.fileId}', '${safeTitle}', '${res.type}')">
+                                            <i class="fas fa-play-circle"></i> Visualizar
                                         </button>
                                         <button class="btn btn-check" onclick="toggleComplete('${resId}', '${disciplineKey}')" title="Marcar como concluído">
                                             <i class="fas fa-check"></i> Concluir
@@ -410,20 +452,47 @@
             updateProgress(disciplineKey);
         }
 
-        function openModal(fileId, title) {
+        // --- FUNÇÃO DE MODAL ATUALIZADA PARA PLAYERS NATIVOS ---
+        function openModal(fileId, title, type) {
             const modal = document.getElementById('resourceModal');
-            const iframe = document.getElementById('modal-iframe');
+            const modalBody = document.getElementById('modal-body-content');
             document.getElementById('modal-title').textContent = title;
-            iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
+            
+            // URL direta de streaming do Google Drive (contorna a interface limitada do preview)
+            const streamUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+
+            if (type === 'audio') {
+                modalBody.innerHTML = `
+                    <audio controls autoplay style="width: 100%;">
+                        <source src="${streamUrl}" type="audio/mp4">
+                        <source src="${streamUrl}" type="audio/mpeg">
+                        Seu navegador não suporta o elemento de áudio.
+                    </audio>
+                    <div class="player-hint"><i class="fas fa-info-circle"></i> Clique nos 3 pontinhos (⋮) do player para alterar a velocidade (ex: 1.5x, 2x).</div>
+                `;
+            } else if (type === 'video') {
+                modalBody.innerHTML = `
+                    <video controls autoplay style="width: 100%; max-height: 60vh;">
+                        <source src="${streamUrl}" type="video/mp4">
+                        Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                    <div class="player-hint"><i class="fas fa-info-circle"></i> Clique nos 3 pontinhos (⋮) do player para alterar a velocidade (ex: 1.5x, 2x).</div>
+                `;
+            } else {
+                // Para PDFs, imagens ou outros, mantém o iframe do Google Drive
+                modalBody.innerHTML = `<iframe src="${previewUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            }
+            
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
             const modal = document.getElementById('resourceModal');
-            const iframe = document.getElementById('modal-iframe');
+            const modalBody = document.getElementById('modal-body-content');
             modal.classList.remove('active');
-            iframe.src = ""; 
+            modalBody.innerHTML = ""; // Limpa o player/iframe para parar a reprodução imediatamente
             document.body.style.overflow = '';
         }
 
@@ -463,15 +532,13 @@
 
         function updateProgress(disciplineKey) {
             const disc = disciplines[disciplineKey];
-            const prefix = disc.prefix;
-            
             let totalResources = 0;
             disc.weeks.forEach(week => { totalResources += week.resources.length; });
 
             let completedCount = 0;
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && key.startsWith(prefix)) {
+                if (key && key.startsWith(disc.prefix)) {
                     completedCount++;
                 }
             }
