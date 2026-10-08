@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVA | IFsuldeMinas – Polo Bragança Paulista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #F16322;
+            --primary-hover: #D14711;
+            --bg-body: #F4F6F8;
+            --bg-card: #FFFFFF;
+            --bg-modal: rgba(0, 0, 0, 0.6);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border: #E2E8F0;
+            --success: #38A169;
+            --success-bg: #F0FFF4;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #1A202C;
+            --bg-card: #2D3748;
+            --bg-modal: rgba(0, 0, 0, 0.85);
+            --text-main: #F7FAFC;
+            --text-muted: #A0AEC0;
+            --border: #4A5568;
+            --success: #68D391;
+            --success-bg: #22543D;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .brand { display: flex; align-items: center; gap: 15px; }
+        .brand img { height: 50px; object-fit: contain; }
+        .brand-text h1 { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        .brand-text p { font-size: 0.85rem; color: var(--text-muted); }
+        
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .theme-toggle {
+            background: none; border: 1px solid var(--border); color: var(--text-main);
+            padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .theme-toggle:hover { background-color: var(--border); }
+
+        .progress-container { max-width: 1200px; margin: 20px auto 0; padding: 0 30px; width: 100%; }
+        .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; }
+        .progress-bar-bg { width: 100%; height: 10px; background-color: var(--border); border-radius: 5px; overflow: hidden; }
+        .progress-bar-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            width: 0%; transition: width 0.5s ease; border-radius: 5px;
+        }
+
+        .tabs-container { max-width: 1200px; margin: 25px auto 0; padding: 0 30px; width: 100%; }
+        .tabs { display: flex; gap: 10px; border-bottom: 2px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+        .tab-btn {
+            background: none; border: none; padding: 12px 20px; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent;
+            margin-bottom: -2px; white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .main-content { max-width: 1200px; margin: 0 auto; padding: 0 30px 40px; width: 100%; flex: 1; }
+        .discipline-panel { display: none; }
+        .discipline-panel.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .info-box {
+            background-color: rgba(241, 99, 34, 0.1); border-left: 4px solid var(--primary);
+            padding: 15px 20px; border-radius: 0 8px 8px 0; margin-bottom: 25px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .info-box i { color: var(--primary); font-size: 1.2rem; margin-top: 3px; }
+        .info-box p { font-size: 0.95rem; color: var(--text-main); }
+
+        .week-card {
+            background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            margin-bottom: 15px; overflow: hidden; box-shadow: var(--shadow);
+        }
+        .week-header {
+            padding: 18px 20px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none; background-color: var(--bg-card);
+        }
+        .week-header:hover { background-color: rgba(241, 99, 34, 0.05); }
+        .week-header:focus { outline: 2px solid var(--primary); outline-offset: -2px; }
+        .week-header h3 { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .week-header h3 i { color: var(--primary); }
+        .week-header .toggle-icon { transition: transform 0.3s ease; color: var(--text-muted); }
+        .week-header.active .toggle-icon { transform: rotate(180deg); }
+
+        .week-content { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+        .week-content.active { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 2000px; } }
+
+        .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .resource-card {
+            background-color: var(--bg-body); border: 1px solid var(--border); border-radius: 10px;
+            padding: 20px; text-align: center; transition: all 0.3s ease; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .resource-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+        .resource-card.completed { background-color: var(--success-bg); border-color: var(--success); }
+        .resource-icon { font-size: 2rem; margin-bottom: 12px; color: var(--primary); }
+        .resource-card.completed .resource-icon { color: var(--success); }
+        .resource-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; }
+        .resource-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; flex: 1; }
+        
+        .resource-actions { display: flex; gap: 8px; width: 100%; }
+        .btn {
+            flex: 1; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; border: none; display: flex; align-items: center; justify-content: center;
+            gap: 6px; transition: all 0.2s; text-decoration: none;
+        }
+        .btn-view { background-color: var(--primary); color: white; }
+        .btn-view:hover { background-color: var(--primary-hover); }
+        .btn-check { background-color: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+        .btn-check:hover { border-color: var(--success); color: var(--success); }
+        .resource-card.completed .btn-check { background-color: var(--success); color: white; border-color: var(--success); }
+
+        .check-mark { position: absolute; top: 10px; right: 10px; color: var(--success); font-size: 1.2rem; display: none; }
+        .resource-card.completed .check-mark { display: block; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-modal); display: none; justify-content: center;
+            align-items: center; z-index: 1000; padding: 20px; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content {
+            background-color: var(--bg-card); width: 100%; max-width: 900px; height: 80vh;
+            border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg);
+        }
+        .modal-header {
+            padding: 15px 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { font-size: 1.1rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .modal-close:hover { color: var(--primary); }
+        .modal-body { flex: 1; background-color: #000; }
+        .modal-body iframe { width: 100%; height: 100%; border: none; }
+
+        footer {
+            background-color: var(--bg-card); 
+            border-top: 1px solid var(--border);
+            text-align: center; 
+            padding: 25px 20px; 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            margin-top: auto;
+        }
+        footer .dev-credit {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            opacity: 0.85;
+        }
+        footer .dev-credit strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; text-align: center; }
+            .brand { flex-direction: column; }
+            .resources-grid { grid-template-columns: 1fr; }
+            .modal-content { height: 90vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="brand">
+                <img src="https://i.ibb.co/SX1MWSCM/Logo2.png" alt="Logo Curso">
+                <div class="brand-text">
+                    <h1>Ambiente Virtual de Aprendizagem</h1>
+                    <p>IFsuldeMinas – Polo Bragança Paulista</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema claro/escuro">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                    <span id="theme-text">Modo Escuro</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-info">
+            <span id="progress-text">Seu progresso na disciplina: 0%</span>
+            <span id="progress-count">0/0 recursos concluídos</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tabs" role="tablist">
+            <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('mat2')" id="tab-mat2">
+                <i class="fas fa-calculator"></i> Metodologia do Ensino da Matemática II
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('didatica')" id="tab-didatica">
+                <i class="fas fa-chalkboard-teacher"></i> Didática do Ensino
+            </button>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div id="panel-mat2" class="discipline-panel active">
+            <div class="info-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir os materiais. Use o botão <strong>"Visualizar"</strong> para abrir o conteúdo aqui mesmo, sem sair da página. Marque como <strong>"Concluir"</strong> ao finalizar para acompanhar seu progresso.</p>
+            </div>
+            <div id="weeks-container-mat2"></div>
+        </div>
+
+        <div id="panel-didatica" class="discipline-panel">
+            <div class="info-box">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Como usar este AVA:</strong> Clique na semana para expandir os materiais. Use o botão <strong>"Visualizar"</strong> para abrir o conteúdo aqui mesmo, sem sair da página. Marque como <strong>"Concluir"</strong> ao finalizar para acompanhar seu progresso.</p>
+            </div>
+            <div id="weeks-container-didatica"></div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="resourceModal" onclick="closeModalOnOverlay(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Visualizando Material</h3>
+                <button class="modal-close" onclick="closeModal()" aria-label="Fechar modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="modal-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ ATUALIZADO -->
+    <footer>
+        <p>&copy; <span id="current-year"></span> IFsuldeMinas – Polo Bragança Paulista. Todos os direitos reservados.</p>
+        <p class="dev-credit">
+            <i class="fas fa-laptop-code"></i> Desenvolvido por <strong>Luciano Rodrigues Pereira</strong>, estudante do IFSuldeMinas.
+        </p>
+    </footer>
+
+    <script>
+        // --- DADOS DAS DISCIPLINAS (Estrutura flexível por semana) ---
+        const disciplines = {
+            mat2: {
+                name: "Metodologia do Ensino da Matemática II",
+                prefix: "ava_mat2_",
+                weeks: [
+                    {
+                        number: 1,
+                        title: "Fundamentos, Contagem e Etnomatemática",
+                        resources: [
+                            { title: "01 - A ilusão da contagem na infância", type: "audio", desc: "Resumo em Áudio", fileId: "1KsRiz3bMDlM3a3IfEfp_9ibXRROSVFYZ" },
+                            { title: "01 - Ensino da Matemática e SND", type: "video", desc: "Resumo em Vídeo", fileId: "1V35VJyzR7gImarWQHGlQEmSQx_6e8-uX" },
+                            { title: "02 - Como a criança constrói o raciocínio matemático", type: "audio", desc: "Resumo em Áudio", fileId: "1ANHYzKF7qqjUDNXqXrNtShkMTk-QPQrL" },
+                            { title: "02 - Os Números na BNCC", type: "video", desc: "Resumo em Vídeo", fileId: "1Ma-qO8VSTm4pOIMDwd0sWs0yDjG5SAqc" },
+                            { title: "03 - A verdadeira lógica das quatro operações", type: "audio", desc: "Resumo em Áudio", fileId: "13-tBKb19Wh0Ec8tXf8LcGxJuw0WQPTHO" },
+                            { title: "03 - Operações Fundamentais", type: "video", desc: "Resumo em Vídeo", fileId: "1xkyZhhAWsvkn_wPtnZynTwuoG8pqdSdG" },
+                            { title: "04 - Etnomatemática contra o colapso da civilização", type: "audio", desc: "Resumo em Áudio", fileId: "1fkNBHrLY70E0HznaPV6qHEUE8CJiPfmc" },
+                            { title: "04 - O Programa Etnomatemática", type: "video", desc: "Resumo em Vídeo", fileId: "1wkkP6xqPlPvLQqbkm9wEsdfjnjQk6O_u" }
+                        ]
+                    },
+                    { number: 2, title: "Conteúdo em Breve", resources: [] },
+                    { number: 3, title: "Conteúdo em Breve", resources: [] },
+                    { number: 4, title: "Conteúdo em Breve", resources: [] },
+                    { number: 5, title: "Conteúdo em Breve", resources: [] },
+                    { number: 6, title: "Conteúdo em Breve", resources: [] },
+                    { number: 7, title: "Conteúdo em Breve", resources: [] }
+                ]
+            },
+            didatica: {
+                name: "Didática do Ensino",
+                prefix: "ava_didatica_",
+                weeks: [
+                    { number: 1, title: "Conteúdo em Breve", resources: [] },
+                    { number: 2, title: "Conteúdo em Breve", resources: [] },
+                    { number: 3, title: "Conteúdo em Breve", resources: [] },
+                    { number: 4, title: "Conteúdo em Breve", resources: [] },
+                    { number: 5, title: "Conteúdo em Breve", resources: [] },
+                    { number: 6, title: "Conteúdo em Breve", resources: [] },
+                    { number: 7, title: "Conteúdo em Breve", resources: [] },
+                    { number: 8, title: "Conteúdo em Breve", resources: [] }
+                ]
+            }
+        };
+
+        let currentDiscipline = 'mat2';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            loadTheme();
+            renderWeeks('mat2');
+            renderWeeks('didatica');
+            updateProgress('mat2');
+        });
+
+        function renderWeeks(disciplineKey) {
+            const container = document.getElementById(`weeks-container-${disciplineKey}`);
+            const disc = disciplines[disciplineKey];
+            let html = '';
+
+            disc.weeks.forEach((week) => {
+                const weekNum = week.number.toString().padStart(2, '0');
+                html += `
+                <div class="week-card">
+                    <div class="week-header" role="button" tabindex="0" aria-expanded="false" 
+                         onclick="toggleWeek(this)" onkeydown="handleKeyToggle(event, this)">
+                        <h3><i class="fas fa-calendar-week"></i> Semana ${weekNum}: ${week.title}</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="week-content">
+                        <div class="resources-grid">
+                            ${week.resources.length > 0 ? week.resources.map((res, resIndex) => {
+                                const resId = `${disc.prefix}w${week.number}_res${resIndex}`;
+                                const iconClass = res.type === 'video' ? 'fa-video' : 
+                                                  res.type === 'audio' ? 'fa-headphones' : 
+                                                  res.type === 'text' ? 'fa-file-pdf' : 'fa-book';
+                                const safeTitle = res.title.replace(/'/g, "\\'");
+                                
+                                return `
+                                <div class="resource-card" id="${resId}">
+                                    <i class="fas fa-check-circle check-mark"></i>
+                                    <div class="resource-icon"><i class="fas ${iconClass}"></i></div>
+                                    <div class="resource-title">${res.title}</div>
+                                    <div class="resource-desc">${res.desc}</div>
+                                    <div class="resource-actions">
+                                        <button class="btn btn-view" onclick="openModal('${res.fileId}', '${safeTitle}')">
+                                            <i class="fas fa-eye"></i> Visualizar
+                                        </button>
+                                        <button class="btn btn-check" onclick="toggleComplete('${resId}', '${disciplineKey}')" title="Marcar como concluído">
+                                            <i class="fas fa-check"></i> Concluir
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('') : '<p style="padding: 20px; text-align: center; color: var(--text-muted); width: 100%;"><i class="fas fa-clock"></i> Conteúdo sendo preparado pelo professor.</p>'}
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+            loadProgress(disciplineKey);
+        }
+
+        function toggleWeek(header) {
+            const content = header.nextElementSibling;
+            const isActive = content.classList.contains('active');
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+            header.setAttribute('aria-expanded', !isActive);
+        }
+
+        function handleKeyToggle(event, header) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleWeek(header);
+            }
+        }
+
+        function switchTab(disciplineKey) {
+            currentDiscipline = disciplineKey;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${disciplineKey}`).classList.add('active');
+            document.querySelectorAll('.discipline-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(`panel-${disciplineKey}`).classList.add('active');
+            updateProgress(disciplineKey);
+        }
+
+        function openModal(fileId, title) {
+            const modal = document.getElementById('resourceModal');
+            const iframe = document.getElementById('modal-iframe');
+            document.getElementById('modal-title').textContent = title;
+            iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('resourceModal');
+            const iframe = document.getElementById('modal-iframe');
+            modal.classList.remove('active');
+            iframe.src = ""; 
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === event.currentTarget) closeModal();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function toggleComplete(resId, disciplineKey) {
+            const card = document.getElementById(resId);
+            const isCompleted = card.classList.contains('completed');
+            if (isCompleted) {
+                card.classList.remove('completed');
+                localStorage.removeItem(resId);
+            } else {
+                card.classList.add('completed');
+                localStorage.setItem(resId, 'true');
+            }
+            updateProgress(disciplineKey);
+        }
+
+        function loadProgress(disciplineKey) {
+            const disc = disciplines[disciplineKey];
+            const prefix = disc.prefix;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(prefix)) {
+                    const resId = key;
+                    const card = document.getElementById(resId);
+                    if (card) card.classList.add('completed');
+                }
+            }
+        }
+
+        function updateProgress(disciplineKey) {
+            const disc = disciplines[disciplineKey];
+            const prefix = disc.prefix;
+            
+            let totalResources = 0;
+            disc.weeks.forEach(week => { totalResources += week.resources.length; });
+
+            let completedCount = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(prefix)) {
+                    completedCount++;
+                }
+            }
+
+            const percentage = totalResources === 0 ? 0 : Math.round((completedCount / totalResources) * 100);
+            document.getElementById('progress-text').textContent = `Seu progresso em ${disc.name}: ${percentage}%`;
+            document.getElementById('progress-count').textContent = `${completedCount}/${totalResources} recursos concluídos`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('ava_theme', newTheme);
+            updateThemeUI(newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('ava_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+        }
+
+        function updateThemeUI(theme) {
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (theme === 'dark') {
+                icon.className = 'fas fa-sun';
+                text.textContent = 'Modo Claro';
+            } else {
+                icon.className = 'fas fa-moon';
+                text.textContent = 'Modo Escuro';
+            }
+        }
+    </script>
+</body>
+</html>
